@@ -6,7 +6,7 @@ metadata:
     app: ollama
 spec:
   accessModes:
-    - ReadWriteOncePod
+    - ReadWriteOnce
   resources:
     requests:
       storage: 10Gi
