@@ -18,3 +18,45 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       # TODO: complete spec for webui based on Part 1
+      containers:
+        - name: webui
+          image: "{{ .Values.webui.image.repository }}:{{ .Values.webui.image.tag}}"
+          imagePullPolicy: {{ .Values.webui.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: OLLAMA_BASE_URL
+              value: "http://{{ .Release.Name }}-ollama:{{ .Values.service.port }}"
+            - name: WEBUI_AUTH
+              value: "false"
+            - name: RAG_EMBEDDING_ENGINE
+              value: "ollama"
+            - name: RAG_OLLAMA_BASE_URL
+              value: "http://{{ .Release.Name }}-ollama:{{ .Values.service.port }}"
+          volumeMounts:
+            - name: data
+              mountPath: /app/backend/data
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: {{ .Values.webui.resources.requests.cpu }}
+              memory: {{ .Values.webui.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.webui.resources.limits.cpu | quote }}
+              memory: {{ .Values.webui.resources.limits.memory }}
+      volumes:
+        - name: data
+          emptyDir: {}

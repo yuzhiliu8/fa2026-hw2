@@ -12,3 +12,8 @@ spec:
     app.kubernetes.io/instance: {{ .Release.Name }}
   # TODO: add a `ports` list, same as Part 1 - name the port "http" and pull
   # the port number from .Values.service.port instead of hardcoding it
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: 11434
+      protocol: TCP

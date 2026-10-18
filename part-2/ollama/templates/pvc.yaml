@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   # TODO: name this using the release name, e.g. {{ .Release.Name }}-ollama-data,
   # so two installs of this chart never collide
-  name:
+  name: {{ .Release.Name }}-ollama-data
   labels:
     app.kubernetes.io/name: ollama
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -11,3 +11,8 @@ spec:
   # TODO: same PVC spec as Part 1 - accessModes and a storage request - but
   # this time pull the values from .Values.persistence instead of
   # hardcoding them
+  accessModes:
+    - {{ .Values.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}

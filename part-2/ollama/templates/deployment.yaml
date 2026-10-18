@@ -18,3 +18,33 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       # TODO: complete spec for ollama based on Part 1
+      containers:
+        - name: ollama
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 11434
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - name: ollama-storage
+              mountPath: /root/.ollama
+          readinessProbe:
+            tcpSocket:
+              port: 11434
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 11434
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              memory: {{ .Values.resources.limits.memory }}
+      volumes:
+        - name: ollama-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-ollama-data

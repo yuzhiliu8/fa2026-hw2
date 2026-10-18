@@ -5,5 +5,10 @@ metadata:
   labels:
     app: ollama
 spec:
+  accessModes:
+    - ReadWriteOncePod
+  resources:
+    requests:
+      storage: 10Gi
   # TODO: this PVC needs to be writable by a single pod at a time, and
   # should request enough storage for a small model (~10GB should be enough).
